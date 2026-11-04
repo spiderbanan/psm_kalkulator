@@ -20,6 +20,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+import com.example.psm_kalkulator.ui.theme.AppTheme
+import androidx.compose.runtime.saveable.rememberSaveable
+
 enum class KeyRole {
     NUMBER, OPERATOR, ACTION, EQUALS, SCIENTIFIC
 }
@@ -72,7 +75,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            CalculatorScreen()
+            AppTheme {
+                CalculatorScreen()
+            }
         }
     }
 }
@@ -83,12 +88,22 @@ fun CalculatorButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
+    val colors = MaterialTheme.colorScheme
+
     val buttonColor = when (key.role) {
-        KeyRole.NUMBER -> Color(0xFF333333)
-        KeyRole.OPERATOR -> Color(0xFFFF9800)
-        KeyRole.ACTION -> Color(0xFF777777)
-        KeyRole.EQUALS -> Color(0xFF2196F3)
-        KeyRole.SCIENTIFIC -> Color(0xFF455A64)
+        KeyRole.NUMBER -> colors.surfaceVariant
+        KeyRole.OPERATOR -> colors.secondary
+        KeyRole.ACTION -> colors.tertiary
+        KeyRole.EQUALS -> colors.primary
+        KeyRole.SCIENTIFIC -> colors.secondaryContainer
+    }
+
+    val textColor = when (key.role) {
+        KeyRole.NUMBER -> colors.onSurfaceVariant
+        KeyRole.OPERATOR -> colors.onSecondary
+        KeyRole.ACTION -> colors.onTertiary
+        KeyRole.EQUALS -> colors.onPrimary
+        KeyRole.SCIENTIFIC -> colors.onSecondaryContainer
     }
 
     Button(
@@ -103,7 +118,7 @@ fun CalculatorButton(
         Text(
             text = key.label,
             fontSize = 22.sp,
-            color = Color.White
+            color = textColor
         )
     }
 }
@@ -146,7 +161,7 @@ fun CalculatorScreen() {
     val isLandscape =
         configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-    var expression by remember { mutableStateOf("") }
+    var expression by rememberSaveable { mutableStateOf("") }
 
     val standardKeys = calculatorKeys.filter { !it.landscapeOnly }
     val scientificKeys = calculatorKeys.filter { it.landscapeOnly }
@@ -169,7 +184,7 @@ fun CalculatorScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF151515))
+            .background(MaterialTheme.colorScheme.background)
             .padding(8.dp)
     ) {
         Box(
@@ -177,7 +192,7 @@ fun CalculatorScreen() {
                 .fillMaxWidth()
                 .weight(1f)
                 .background(
-                    Color(0xFF222222),
+                    MaterialTheme.colorScheme.surface,
                     RoundedCornerShape(12.dp)
                 )
                 .padding(12.dp),
@@ -188,7 +203,7 @@ fun CalculatorScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState()),
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 32.sp,
                 textAlign = TextAlign.End
             )
