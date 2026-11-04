@@ -30,10 +30,11 @@ data class CalculatorKey(
 )
 
 
+
 val calculatorKeys = listOf(
     CalculatorKey("AC", KeyRole.ACTION),
-    CalculatorKey("±", KeyRole.ACTION),
-    CalculatorKey("%", KeyRole.ACTION),
+    CalculatorKey("(", KeyRole.ACTION),
+    CalculatorKey(")", KeyRole.ACTION),
     CalculatorKey("÷", KeyRole.OPERATOR),
 
     CalculatorKey("7", KeyRole.NUMBER),
@@ -56,6 +57,7 @@ val calculatorKeys = listOf(
     CalculatorKey("⌫", KeyRole.ACTION),
     CalculatorKey("=", KeyRole.EQUALS)
 )
+
 
 // Główna aktywność
 class MainActivity : ComponentActivity() {
