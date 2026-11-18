@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 
 import com.example.psm_kalkulator.ui.theme.AppTheme
 import androidx.compose.runtime.saveable.rememberSaveable
+import com.example.psm_kalkulator.ui.theme.CalculatorFontFamily
 
 import org.mariuszgromada.math.mxparser.License
 import org.mariuszgromada.math.mxparser.Expression
@@ -258,6 +259,10 @@ fun CalculatorScreen(
             contentAlignment = Alignment.BottomEnd
         ) {
             Text(
+                style = MaterialTheme.typography.displayLarge.copy(
+                    fontFamily = CalculatorFontFamily,
+                    fontFeatureSettings = "tnum"
+                ),
                 text = expression,
                 modifier = Modifier
                     .fillMaxWidth()

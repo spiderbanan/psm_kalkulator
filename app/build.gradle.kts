@@ -53,4 +53,5 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.mxparser)
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.12.1")
 }
