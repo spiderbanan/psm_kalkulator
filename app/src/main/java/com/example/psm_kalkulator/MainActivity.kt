@@ -201,6 +201,9 @@ fun CalculatorScreen(
     val standardKeys = calculatorKeys.filter { !it.landscapeOnly }
     val scientificKeys = calculatorKeys.filter { it.landscapeOnly }
 
+    val calculatorEngine = remember {
+        CalculatorEngine()
+    }
     fun handleKeyClick(key: CalculatorKey) {
         when (key.label) {
             "AC" -> {
@@ -214,11 +217,17 @@ fun CalculatorScreen(
             }
 
             "=" -> {
-                if (expression.isNotBlank()) {
-                    val result = Expression(expression).calculate()
+                when (val result = calculatorEngine.calculate(expression)) {
+                    is CalculationResult.Success -> {
+                        expression = result.value.toString()
+                    }
 
-                    if (!result.isNaN() && !result.isInfinite()) {
-                        expression = result.toString()
+                    is CalculationResult.Error -> {
+                        expression = result.message
+                    }
+
+                    CalculationResult.Empty -> {
+                        expression = ""
                     }
                 }
             }
