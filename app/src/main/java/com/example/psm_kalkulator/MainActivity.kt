@@ -23,6 +23,9 @@ import androidx.compose.ui.unit.sp
 import com.example.psm_kalkulator.ui.theme.AppTheme
 import androidx.compose.runtime.saveable.rememberSaveable
 
+import org.mariuszgromada.math.mxparser.License
+import org.mariuszgromada.math.mxparser.Expression
+
 enum class KeyRole {
     NUMBER, OPERATOR, ACTION, EQUALS, SCIENTIFIC
 }
@@ -38,12 +41,12 @@ val calculatorKeys = listOf(
     CalculatorKey("AC", KeyRole.ACTION),
     CalculatorKey("(", KeyRole.ACTION),
     CalculatorKey(")", KeyRole.ACTION),
-    CalculatorKey("÷", KeyRole.OPERATOR),
+    CalculatorKey("÷", KeyRole.OPERATOR, "/"),
 
     CalculatorKey("7", KeyRole.NUMBER),
     CalculatorKey("8", KeyRole.NUMBER),
     CalculatorKey("9", KeyRole.NUMBER),
-    CalculatorKey("×", KeyRole.OPERATOR),
+    CalculatorKey("×", KeyRole.OPERATOR, "*"),
 
     CalculatorKey("4", KeyRole.NUMBER),
     CalculatorKey("5", KeyRole.NUMBER),
@@ -71,14 +74,43 @@ val calculatorKeys = listOf(
 )
 
 class MainActivity : ComponentActivity() {
+
+    private var savedExpression: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        License.iConfirmNonCommercialUse("Mateusz Kielar")
+
+        savedExpression = savedInstanceState
+            ?.getString("calculator_expression") ?: ""
+
         setContent {
             AppTheme {
-                CalculatorScreen()
+                CalculatorScreen(
+                    initialExpression = savedExpression,
+                    onExpressionChange = { newExpression ->
+                        savedExpression = newExpression
+                    }
+                )
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putString(
+            "calculator_expression",
+            savedExpression
+        )
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        savedExpression = savedInstanceState
+            .getString("calculator_expression") ?: ""
     }
 }
 
@@ -156,29 +188,47 @@ fun CalculatorGrid(
 }
 
 @Composable
-fun CalculatorScreen() {
+fun CalculatorScreen(
+    initialExpression: String,
+    onExpressionChange: (String) -> Unit
+) {
     val configuration = LocalConfiguration.current
     val isLandscape =
         configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-    var expression by rememberSaveable { mutableStateOf("") }
+    var expression by rememberSaveable { mutableStateOf(initialExpression) }
 
     val standardKeys = calculatorKeys.filter { !it.landscapeOnly }
     val scientificKeys = calculatorKeys.filter { it.landscapeOnly }
 
     fun handleKeyClick(key: CalculatorKey) {
         when (key.label) {
-            "AC" -> expression = ""
+            "AC" -> {
+                expression = ""
+            }
+
             "⌫" -> {
                 if (expression.isNotEmpty()) {
                     expression = expression.dropLast(1)
                 }
             }
+
             "=" -> {
-                // Obliczanie dodamy w kolejnym etapie.
+                if (expression.isNotBlank()) {
+                    val result = Expression(expression).calculate()
+
+                    if (!result.isNaN() && !result.isInfinite()) {
+                        expression = result.toString()
+                    }
+                }
             }
-            else -> expression += key.insertText
+
+            else -> {
+                expression += key.insertText
+            }
         }
+
+        onExpressionChange(expression)
     }
 
     Column(
