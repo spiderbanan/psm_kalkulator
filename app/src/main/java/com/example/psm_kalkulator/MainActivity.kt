@@ -26,6 +26,7 @@ import com.example.psm_kalkulator.ui.theme.CalculatorFontFamily
 
 import org.mariuszgromada.math.mxparser.License
 import org.mariuszgromada.math.mxparser.Expression
+import android.util.Log
 
 enum class KeyRole {
     NUMBER, OPERATOR, ACTION, EQUALS, SCIENTIFIC
@@ -105,6 +106,7 @@ class MainActivity : ComponentActivity() {
             "calculator_expression",
             savedExpression
         )
+        Log.d("CalculatorState", "Zapis stanu: $savedExpression")
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -239,6 +241,7 @@ fun CalculatorScreen(
         }
 
         onExpressionChange(expression)
+        Log.d("CalculatorState", "Aktualne pole działania: $expression")
     }
 
     Column(
